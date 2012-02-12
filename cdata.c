@@ -17,7 +17,13 @@
 
 static int cdata_open(struct inode *inode, struct file *filp)
 {
+	int minor;
+	
 	printk(KERN_INFO "CDATA: in open\n");
+	
+	minor = MINOR(inode->i_rdev);
+	printk(KERN_INFO "CDATA: minor = %d\n", minor);
+	//while(1);	//system will hang on here
 	return 0;
 }
 
@@ -26,15 +32,28 @@ static int cdata_close(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-static ssize_t cdata_write(struct file *filp, const char *chp, size_t st, loff_t *lt)
+static ssize_t cdata_read(struct file *filp, char *buf, size_t size, loff_t *off)
 {
 	return 0;
 }
 
-static struct file_operations cdata_fops = {	
+static ssize_t cdata_write(struct file *filp, const char *buf, size_t size, loff_t *off)
+{
+	return 0;
+}
+
+static int cdata_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, unsigned long arg)
+{
+	return 0;
+}
+
+static struct file_operations cdata_fops = {
+	owner:		THIS_MODULE,	//for kernel 2.6 later	
 	open:		cdata_open,
 	release:	cdata_close,
+	read:		cdata_read,
 	write:		cdata_write,
+	ioctl:		cdata_ioctl,
 };
 
 int cdata_init_module(void)
