@@ -39,10 +39,20 @@ static ssize_t cdata_read(struct file *filp, char *buf, size_t size, loff_t *off
 
 static ssize_t cdata_write(struct file *filp, const char *buf, size_t size, loff_t *off)
 {
+	int i;
+	
+	for(i = 0; i < 5000; i++)
+		;
+	
 	return 0;
 }
 
 static int cdata_ioctl(struct inode *inode, struct file *filp, unsigned int cmd, unsigned long arg)
+{
+	return 0;
+}
+
+static int cdata_flush(struct file *filp)
 {
 	return 0;
 }
@@ -54,9 +64,10 @@ static struct file_operations cdata_fops = {
 	read:		cdata_read,
 	write:		cdata_write,
 	ioctl:		cdata_ioctl,
+	flush:		cdata_flush,
 };
 
-int cdata_init_module(void)
+static int cdata_init_module(void)
 {
 	if(register_chrdev(121, "cdata", &cdata_fops) < 0) {
 		printk(KERN_INFO "CDATA: can't register driver\n");
@@ -65,7 +76,7 @@ int cdata_init_module(void)
 	return 0;
 }
 
-void cdata_cleanup_module(void)
+static void cdata_cleanup_module(void)
 {
 	unregister_chrdev(121, "cdata");
 }

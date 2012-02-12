@@ -12,5 +12,6 @@ int main(void)
 {
 	int fd;
 	fd = open("/dev/cdata3", O_RDWR);
+	write(fd, "123", 3);
 	close(fd);
 }
