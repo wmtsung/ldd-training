@@ -39,10 +39,16 @@ static ssize_t cdata_read(struct file *filp, char *buf, size_t size, loff_t *off
 
 static ssize_t cdata_write(struct file *filp, const char *buf, size_t size, loff_t *off)
 {
-	int i;
+	int n = 0;
 	
-	for(i = 0; i < 5000; i++)
-		;
+	printk(KERN_INFO "CDATA: in write\n");
+	
+	while(1) {
+		n++;
+		printk(KERN_INFO "while loop = %d\n", n);
+		current->state = TASK_INTERRUPTIBLE;
+		schedule();
+	}
 	
 	return 0;
 }
@@ -69,10 +75,19 @@ static struct file_operations cdata_fops = {
 
 static int cdata_init_module(void)
 {
+	unsigned long *fb;
+	int i;
+	
+	fb = ioremap(0x33f00000, 320 * 240 * 4);	//1 pixel = 4 bytes
+	for(i = 0; i < 320 * 240; i++) {
+		writel(0x00ff0000, fb++);
+	}
+	
 	if(register_chrdev(121, "cdata", &cdata_fops) < 0) {
 		printk(KERN_INFO "CDATA: can't register driver\n");
 		return -1;
 	}
+	printk(KERN_INFO "CDATA: init module\n");
 	return 0;
 }
 
